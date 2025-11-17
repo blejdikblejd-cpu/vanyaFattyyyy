@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кнопка "Ваня жирный" - Мультиплеер</title>
+    <meta name="description" content="Мультиплеерная кнопка Ваня жирный с синхронизацией в реальном времени">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #5a3921;
+            background: #8B4513;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Фон котлеты с зубами */
+        body:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at center, #A0522D 0%, #8B4513 70%),
+                radial-gradient(circle at 20% 30%, #CD853F 10%, transparent 11%),
+                radial-gradient(circle at 70% 20%, #D2691E 8%, transparent 9%),
+                radial-gradient(circle at 40% 70%, #B8860B 12%, transparent 13%),
+                radial-gradient(circle at 80% 60%, #DAa520 7%, transparent 8%),
+                radial-gradient(ellipse at 20% 15%, #ffffff 8%, transparent 9%),
+                radial-gradient(ellipse at 35% 12%, #ffffff 9%, transparent 10%),
+                radial-gradient(ellipse at 50% 15%, #ffffff 10%, transparent 11%),
+                radial-gradient(ellipse at 65% 12%, #ffffff 9%, transparent 10%),
+                radial-gradient(ellipse at 80% 15%, #ffffff 8%, transparent 9%),
+                radial-gradient(ellipse at 20% 85%, #ffffff 8%, transparent 9%),
+                radial-gradient(ellipse at 35% 88%, #ffffff 9%, transparent 10%),
+                radial-gradient(ellipse at 50% 85%, #ffffff 10%, transparent 11%),
+                radial-gradient(ellipse at 65% 88%, #ffffff 9%, transparent 10%),
+                radial-gradient(ellipse at 80% 85%, #ffffff 8%, transparent 9%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            backdrop-filter: blur(3px);
+            border: 2px solid rgba(139, 69, 19, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #8B4513;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.2);
+        }
+        
+        .user-info {
+            background: rgba(240, 217, 181, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #8B4513;
+        }
+        
+        .user-info p {
+            margin: 5px 0;
+            font-weight: 500;
+        }
+        
+        .change-name {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .change-name:hover {
+            background: #A0522D;
+        }
+        
+        .name-input-container {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .kotleta-container {
+            position: relative;
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .kotleta-button {
+            width: 220px;
+            height: 120px;
+            background: 
+                radial-gradient(circle at 30% 40%, #d2691e 10%, transparent 11%),
+                radial-gradient(circle at 70% 30%, #cd853f 8%, transparent 9%),
+                radial-gradient(circle at 40% 70%, #b8860b 12%, transparent 13%),
+                radial-gradient(circle at 80% 60%, #daa520 7%, transparent 8%),
+                linear-gradient(135deg, #8B4513 0%, #a0522d 50%, #d2691e 100%);
+            border-radius: 60px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 
+                0 15px 25px rgba(0, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 6px solid #5D2906;
+            overflow: hidden;
+        }
+        
+        .kotleta-button:before {
+            content: "";
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: 
+                radial-gradient(circle at 20% 30%, #daa520 5%, transparent 6%),
+                radial-gradient(circle at 60% 20%, #b8860b 6%, transparent 7%),
+                radial-gradient(circle at 80% 70%, #cd853f 8%, transparent 9%),
+                linear-gradient(135deg, #a0522d 0%, #8B4513 100%);
+            border-radius: 50px;
+            box-shadow: 
+                inset 0 5px 15px rgba(255, 255, 255, 0.4),
+                inset 0 -5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .kotleta-button:after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 80px;
+            background: 
+                radial-gradient(circle at 30% 60%, #f4a460 10%, transparent 11%),
+                radial-gradient(circle at 70% 40%, #deb887 8%, transparent 9%),
+                radial-gradient(ellipse at center, #cd853f 0%, #8B4513 70%);
+            border-radius: 40px;
+            box-shadow: 
+                inset 0 3px 10px rgba(255, 255, 255, 0.3),
+                inset 0 -3px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .kotleta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 18px 30px rgba(0, 0, 0, 0.35),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.5);
+        }
+        
+        .kotleta-button:active {
+            transform: scale(0.95);
+            box-shadow: 
+                0 8px 15px rgba(0, 0, 0, 0.25),
+                inset 0 2px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        .button-text {
+            position: relative;
+            z-index: 10;
+            color: #fff;
+            font-weight: bold;
+            font-size: 22px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        .counter {
+            font-size: 24px;
+            color: #8B4513;
+            margin: 25px 0;
+            font-weight: bold;
+        }
+        
+        .counter-number {
+            font-size: 36px;
+            color: #5D2906;
+            display: inline-block;
+            min-width: 100px;
+            background: linear-gradient(to bottom, #F0D9B5, #E8C9A3);
+            padding: 8px 20px;
+            border-radius: 15px;
+            border: 3px solid #8B4513;
+            box-shadow: 0 5px 10px rgba(139, 69, 19, 0.2);
+        }
+        
+        .footer {
+            margin-top: 30px;
+            color: #8B4513;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Стили для таблицы лидеров */
+        .leaderboard-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(3px);
+            border: 2px solid rgba(139, 69, 19, 0.5);
+        }
+        
+        .leaderboard-title {
+            color: #8B4513;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.2);
+            text-align: center;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .leaderboard-table th {
+            background: linear-gradient(to bottom, #8B4513, #A0522D);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .leaderboard-table tr {
+            border-bottom: 1px solid #E8C9A3;
+        }
+        
+        .leaderboard-table tr:nth-child(even) {
+            background-color: rgba(240, 217, 181, 0.3);
+        }
+        
+        .leaderboard-table tr:hover {
+            background-color: rgba(205, 133, 63, 0.2);
+        }
+        
+        .leaderboard-table td {
+            padding: 12px 15px;
+            color: #5D2906;
+        }
+        
+        .leaderboard-table .rank {
+            font-weight: bold;
+            width: 60px;
+            text-align: center;
+        }
+        
+        .leaderboard-table .name {
+            font-weight: 600;
+        }
+        
+        .leaderboard-table .score {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        .current-user {
+            background-color: rgba(139, 69, 19, 0.15) !important;
+            font-weight: bold;
+        }
+        
+        .medal {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 8px;
+            text-align: center;
+            line-height: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .gold {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        
+        .silver {
+            background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+        }
+        
+        .bronze {
+            background: linear-gradient(135deg, #CD7F32, #8B4513);
+        }
+        
+        .user-input {
+            padding: 10px 15px;
+            border: 2px solid #8B4513;
+            border-radius: 10px;
+            font-size: 16px;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-right: 10px;
+        }
+        
+        .save-button {
+            padding: 10px 20px;
+            background: linear-gradient(to bottom, #8B4513, #A0522D);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .save-button:hover {
+            background: linear-gradient(to bottom, #A0522D, #8B4513);
+            transform: translateY(-2px);
+        }
+        
+        .save-button:active {
+            transform: translateY(0);
+        }
+        
+        .sync-indicator {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #8B4513;
+            opacity: 0.7;
+        }
+        
+        .sync-indicator.syncing {
+            color: #D2691E;
+            font-weight: bold;
+        }
+        
+        .online-users {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #8B4513;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .connected {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .disconnected {
+            background: #f44336;
+            color: white;
+        }
+        
+        @media (max-width: 500px) {
+            .container, .leaderboard-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .kotleta-button {
+                width: 180px;
+                height: 100px;
+            }
+            
+            .kotleta-button:before {
+                width: 160px;
+                height: 80px;
+            }
+            
+            .kotleta-button:after {
+                width: 140px;
+                height: 60px;
+            }
+            
+            .button-text {
+                font-size: 18px;
+            }
+            
+            .name-input-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .user-input {
+                width: 100%;
+                max-width: 250px;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .connection-status {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status disconnected" id="connectionStatus">
+        Подключение...
+    </div>
+
+    <div class="container">
+        <h1>Кнопка Ваня жирный - Мультиплеер</h1>
+        
+        <!-- Блок информации о пользователе -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <p>Игрок: <span id="currentUserName">Неизвестный</span></p>
+            <p>Ваш вес: <span id="currentUserScore">0</span> кг</p>
+            <button class="change-name" id="changeNameBtn">Сменить имя</button>
+        </div>
+        
+        <!-- Форма ввода имени (показывается только при первом посещении) -->
+        <div class="name-input-container" id="nameInputContainer">
+            <input type="text" class="user-input" id="userName" placeholder="Введите ваше имя" maxlength="20">
+            <button class="save-button" id="saveNameBtn">Начать играть</button>
+        </div>
+        
+        <div class="kotleta-container">
+            <div class="kotleta-button" id="kotletaButton">
+                <div class="button-text">Ваня жирный</div>
+            </div>
+        </div>
+        
+        <div class="counter">
+            Вес Вани: <span class="counter-number" id="counter">0</span> кг
+        </div>
+        
+        <div class="sync-indicator" id="syncIndicator">Подключаемся к серверу...</div>
+        <div class="online-users" id="onlineUsers">Онлайн: 0 игроков</div>
+        
+        <div class="footer">
+            Сделано с любовью к котлетам | Реальная синхронизация между игроками
+        </div>
+    </div>
+
+    <div class="leaderboard-container">
+        <h2 class="leaderboard-title">Таблица лидеров (в реальном времени)</h2>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th class="rank">Место</th>
+                    <th class="name">Имя</th>
+                    <th class="score">Килограммы</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+                <!-- Таблица будет заполнена JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+    // Конфигурация сервера
+    const SERVER_URL = 'http://localhost:3000';
+    let socket = null;
+    let userId = localStorage.getItem('kotletaUserId') || generateUserId();
+    let userName = localStorage.getItem('kotletaUserName') || '';
+    let userScore = parseInt(localStorage.getItem('kotletaUserScore')) || 0;
+    let isConnected = false;
+    let clickInProgress = false;
+
+    // Получаем элементы DOM
+    const kotletaButton = document.getElementById('kotletaButton');
+    const counterElement = document.getElementById('counter');
+    const userNameInput = document.getElementById('userName');
+    const saveNameButton = document.getElementById('saveNameBtn');
+    const changeNameButton = document.getElementById('changeNameBtn');
+    const nameInputContainer = document.getElementById('nameInputContainer');
+    const userInfo = document.getElementById('userInfo');
+    const currentUserName = document.getElementById('currentUserName');
+    const currentUserScore = document.getElementById('currentUserScore');
+    const leaderboardBody = document.getElementById('leaderboardBody');
+    const syncIndicator = document.getElementById('syncIndicator');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const onlineUsers = document.getElementById('onlineUsers');
+
+    // Генерация уникального ID пользователя
+    function generateUserId() {
+        const id = 'user_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('kotletaUserId', id);
+        return id;
+    }
+
+    // Инициализация при загрузке страницы
+    function init() {
+        if (userName) {
+            showUserInfo();
+        } else {
+            showNameInput();
+        }
+        
+        counterElement.textContent = userScore;
+        currentUserScore.textContent = userScore;
+        
+        connectToServer();
+        loadLeaderboard();
+    }
+
+    // Подключение к серверу через WebSocket
+    function connectToServer() {
+        try {
+            // Создаем реальное WebSocket подключение
+            socket = io(SERVER_URL);
+            
+            // Обработчики событий WebSocket
+            socket.on('connect', () => {
+                console.log('Подключено к серверу');
+                isConnected = true;
+                updateConnectionStatus(true);
+                syncIndicator.textContent = "Подключено к серверу";
+                
+                // Отправляем информацию о пользователе на сервер
+                if (userName) {
+                    sendUserJoin();
+                }
+                
+                loadLeaderboard();
+            });
+            
+            socket.on('connected', (data) => {
+                console.log('Сервер подтвердил подключение:', data.message);
+            });
+            
+            socket.on('leaderboard_update', (leaderboardData) => {
+                console.log('Получено обновление таблицы лидеров:', leaderboardData);
+                updateLeaderboard(leaderboardData);
+            });
+            
+            socket.on('user_clicked', (data) => {
+                console.log('Другой пользователь нажал:', data.userName, data.score);
+                // Автоматически обновляем таблицу лидеров
+                loadLeaderboard();
+            });
+            
+            socket.on('online_users', (data) => {
+                console.log('Обновление онлайн статистики:', data.count);
+                onlineUsers.textContent = `Онлайн: ${data.count} игроков`;
+            });
+            
+            socket.on('disconnect', () => {
+                console.log('Отключено от сервера');
+                isConnected = false;
+                updateConnectionStatus(false);
+                syncIndicator.textContent = "Отключено от сервера";
+            });
+            
+            socket.on('error', (error) => {
+                console.error('Ошибка WebSocket:', error);
+                syncIndicator.textContent = "Ошибка подключения";
+            });
+            
+        } catch (error) {
+            console.error('Ошибка подключения:', error);
+            syncIndicator.textContent = "Ошибка подключения к серверу";
+            updateConnectionStatus(false);
+        }
+    }
+
+    // Обновление статуса подключения
+    function updateConnectionStatus(connected) {
+        isConnected = connected;
+        if (connected) {
+            connectionStatus.textContent = "✓ Подключено";
+            connectionStatus.className = "connection-status connected";
+        } else {
+            connectionStatus.textContent = "✗ Отключено";
+            connectionStatus.className = "connection-status disconnected";
+        }
+    }
+
+    // Отправка информации о присоединении пользователя
+    function sendUserJoin() {
+        if (!isConnected || !userName) return;
+        
+        socket.emit('user_join', {
+            userId: userId,
+            userName: userName,
+            score: userScore
+        });
+    }
+
+    // Отправка клика на сервер
+    function sendClick() {
+        if (!isConnected || clickInProgress) return;
+        
+        clickInProgress = true;
+        
+        // Увеличиваем счетчик на 1
+        userScore += 1;
+        localStorage.setItem('kotletaUserScore', userScore);
+        
+        // Отправляем клик на сервер через WebSocket
+        socket.emit('user_click', {
+            userId: userId,
+            userName: userName,
+            score: userScore
+        });
+        
+        showSyncIndicator();
+        
+        // Разрешаем следующий клик через 100мс
+        setTimeout(() => {
+            clickInProgress = false;
+        }, 100);
+    }
+
+    // Загрузка таблицы лидеров с сервера
+    async function loadLeaderboard() {
+        try {
+            const response = await fetch(`${SERVER_URL}/api/leaderboard`);
+            const leaderboardData = await response.json();
+            updateLeaderboard(leaderboardData);
+        } catch (error) {
+            console.error('Ошибка загрузки таблицы лидеров:', error);
+            updateLeaderboard([]);
+        }
+    }
+
+    // Показать форму ввода имени
+    function showNameInput() {
+        nameInputContainer.style.display = 'block';
+        userInfo.style.display = 'none';
+    }
+    
+    // Показать информацию о пользователе
+    function showUserInfo() {
+        nameInputContainer.style.display = 'none';
+        userInfo.style.display = 'block';
+        currentUserName.textContent = userName;
+        currentUserScore.textContent = userScore;
+    }
+    
+    // Сохранить имя пользователя
+    function saveUserName() {
+        const name = userNameInput.value.trim();
+        
+        if (name === '') {
+            alert('Пожалуйста, введите ваше имя!');
+            return;
+        }
+        
+        userName = name;
+        localStorage.setItem('kotletaUserName', userName);
+        
+        showUserInfo();
+        
+        // Отправляем информацию о присоединении на сервер
+        if (isConnected) {
+            sendUserJoin();
+        }
+        
+        loadLeaderboard();
+        showSyncIndicator();
+    }
+    
+    // Сменить имя пользователя
+    function changeUserName() {
+        showNameInput();
+        userNameInput.value = userName;
+    }
+    
+    // Показать индикатор синхронизации
+    function showSyncIndicator() {
+        syncIndicator.textContent = "Синхронизация с сервером...";
+        syncIndicator.classList.add('syncing');
+        
+        setTimeout(() => {
+            syncIndicator.textContent = "Данные синхронизированы!";
+            syncIndicator.classList.remove('syncing');
+            
+            setTimeout(() => {
+                if (isConnected) {
+                    syncIndicator.textContent = "Подключено к серверу";
+                }
+            }, 2000);
+        }, 1000);
+    }
+    
+    // Функция для обновления таблицы лидеров
+    function updateLeaderboard(leaderboardData) {
+        const topTen = leaderboardData.slice(0, 10);
+        
+        leaderboardBody.innerHTML = '';
+        
+        topTen.forEach((entry, index) => {
+            const row = document.createElement('tr');
+            
+            let medalHtml = '';
+            if (index === 0) {
+                medalHtml = '<span class="medal gold">1</span>';
+            } else if (index === 1) {
+                medalHtml = '<span class="medal silver">2</span>';
+            } else if (index === 2) {
+                medalHtml = '<span class="medal bronze">3</span>';
+            }
+            
+            row.innerHTML = `
+                <td class="rank">${medalHtml} ${index + 1}</td>
+                <td class="name">${entry.name}</td>
+                <td class="score">${entry.score} кг</td>
+            `;
+            
+            if (entry.name === userName) {
+                row.classList.add('current-user');
+            }
+            
+            leaderboardBody.appendChild(row);
+        });
+        
+        if (topTen.length === 0) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.innerHTML = '<td colspan="3" style="text-align: center; padding: 20px;">Пока нет результатов</td>';
+            leaderboardBody.appendChild(emptyRow);
+        }
+    }
+    
+    // Обработчик нажатия на кнопку-котлету
+    kotletaButton.addEventListener('click', function() {
+        if (clickInProgress) return;
+        
+        if (!userName) {
+            alert('Пожалуйста, сначала введите ваше имя!');
+            return;
+        }
+        
+        sendClick();
+        
+        // Немедленно обновляем интерфейс
+        counterElement.textContent = userScore;
+        currentUserScore.textContent = userScore;
+        
+        // Анимация нажатия
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            this.style.transform = 'scale(1)';
+        }, 150);
+    });
+
+    // Обработчики событий
+    saveNameButton.addEventListener('click', saveUserName);
+    changeNameButton.addEventListener('click', changeUserName);
+    
+    userNameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            saveUserName();
+        }
+    });
+    
+    // Инициализация при загрузке страницы
+    init();
+    
+    console.log("Нажмите на котлету! Реальная синхронизация через WebSocket");
+</script>
+    </script>
+</body>
+</html>
